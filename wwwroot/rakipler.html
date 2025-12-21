@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUBAT OTO - Rakip Analizi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/metronic-style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-cog"></i> KUBAT OTO</h3>
+        </div>
+        <ul class="sidebar-menu">
+                <li><a href="/index.html"><i class="fas fa-tachometer-alt"></i> Genel Bakış</a></li>
+            <li><a href="/satislar.html"><i class="fas fa-shopping-cart"></i> Satışlar</a></li>
+            <li><a href="/tedarikciler.html"><i class="fas fa-truck"></i> Tedarikçiler</a></li>
+            <li><a href="/stok-durumu.html"><i class="fas fa-boxes"></i> Stok Durumu</a></li>
+            <li><a href="/rakipler.html" class="active"><i class="fas fa-chart-bar"></i> Rakip Analizi</a></li>
+            <li><a href="/iadeler.html"><i class="fas fa-undo"></i> İadeler</a></li>
+            <li><a href="/musteriler.html"><i class="fas fa-users"></i> Müşteriler</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-chart-bar me-2"></i>Rakip Analizi</h1>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-table me-2"></i>Rakip Fiyat Karşılaştırması</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ürün Adı</th>
+                                        <th>Bizim Fiyatımız</th>
+                                        <th id="rakipHeader">Rakip Fiyatları</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rakiplerTable">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Fiyat Güncelle Modal -->
+    <div class="modal fade" id="fiyatGuncelleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Fiyat Güncelle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Ürün:</strong> <span id="modalUrunAdi"></span></p>
+                    <p><strong>Mevcut Fiyat:</strong> <span id="modalMevcutFiyat"></span></p>
+                    <div class="mb-3">
+                        <label for="yeniFiyatInput" class="form-label">Yeni Fiyat:</label>
+                        <input type="number" class="form-control" id="yeniFiyatInput" step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" id="fiyatGuncelleBtn">Güncelle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentUrunID = null;
+        const fiyatGuncelleModal = new bootstrap.Modal(document.getElementById('fiyatGuncelleModal'));
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(Math.floor(num));
+        }
+
+        function openFiyatGuncelleModal(urunID, urunAdi, mevcutFiyat) {
+            currentUrunID = urunID;
+            document.getElementById('modalUrunAdi').textContent = urunAdi;
+            document.getElementById('modalMevcutFiyat').textContent = formatCurrency(mevcutFiyat);
+            document.getElementById('yeniFiyatInput').value = mevcutFiyat;
+            fiyatGuncelleModal.show();
+        }
+
+        async function guncelleFiyat() {
+            const yeniFiyat = parseFloat(document.getElementById('yeniFiyatInput').value);
+            if (isNaN(yeniFiyat) || yeniFiyat < 0) {
+                alert('Geçerli bir fiyat giriniz!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/rakip/urunler/${currentUrunID}/fiyat`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ yeniFiyat: yeniFiyat })
+                });
+
+                const json = await response.json();
+                if (json.success) {
+                    fiyatGuncelleModal.hide();
+                    loadRakipAnalizi();
+                    alert('Fiyat başarıyla güncellendi!');
+                } else {
+                    alert('Fiyat güncellenirken hata oluştu: ' + (json.message || 'Bilinmeyen hata'));
+                }
+            } catch (error) {
+                console.error('Fiyat güncelleme hatası:', error);
+                alert('Fiyat güncellenirken hata oluştu: ' + error.message);
+            }
+        }
+
+        document.getElementById('fiyatGuncelleBtn').addEventListener('click', guncelleFiyat);
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        async function loadRakipAnalizi() {
+            try {
+                const response = await fetch('/api/rakip/analiz');
+                const json = await response.json();
+                
+                console.log('Rakip Analizi API Response:', json);
+                
+                const tbody = document.getElementById('rakiplerTable');
+                const thead = document.querySelector('#rakiplerTable').closest('.table-responsive')?.querySelector('thead tr');
+                
+                if (json.success && json.data && json.data.length > 0) {
+                    const urunler = json.data;
+                    
+                    // Rakip isimlerini topla
+                    const rakipIsimleri = new Set();
+                    urunler.forEach(urun => {
+                        if (urun.rakipIsimleri && Array.isArray(urun.rakipIsimleri)) {
+                            urun.rakipIsimleri.forEach(isim => rakipIsimleri.add(isim));
+                        }
+                    });
+                    const rakipListesi = Array.from(rakipIsimleri);
+                    
+                    // Header oluştur
+                    if (thead) {
+                        let headerHTML = '<th>Ürün Adı</th><th>Bizim Fiyatımız</th>';
+                        rakipListesi.forEach(rakip => {
+                            headerHTML += `<th>${escapeHtml(rakip)}</th>`;
+                        });
+                        thead.innerHTML = headerHTML;
+                    }
+                    
+                    // Tablo içeriğini oluştur
+                    tbody.innerHTML = urunler.map(urun => {
+                        const urunAdiEscaped = escapeHtml(urun.urunAdi || '');
+                        const urunAdiForJs = (urun.urunAdi || '').replace(/'/g, "\\'");
+                        
+                        let rowHTML = `<tr>
+                            <td>${urunAdiEscaped}</td>
+                            <td class="text-end">
+                                <strong>${formatCurrency(urun.bizimFiyat || 0)}</strong>
+                                <button class="btn btn-sm btn-outline-primary ms-2 fiyat-guncelle-btn" 
+                                        data-bs-toggle="modal" data-bs-target="#fiyatGuncelleModal"
+                                        onclick="openFiyatGuncelleModal(${urun.urunID}, '${urunAdiForJs}', ${urun.bizimFiyat || 0})">
+                                    <i class="fas fa-edit me-1"></i> Fiyat Güncelle
+                                </button>
+                            </td>`;
+                        
+                        rakipListesi.forEach(rakip => {
+                            if (urun.rakipIsimleri && Array.isArray(urun.rakipIsimleri) && 
+                                urun.rakipFiyatlari && Array.isArray(urun.rakipFiyatlari)) {
+                                const rakipIndex = urun.rakipIsimleri.indexOf(rakip);
+                                if (rakipIndex >= 0 && rakipIndex < urun.rakipFiyatlari.length && 
+                                    urun.rakipFiyatlari[rakipIndex] !== null && urun.rakipFiyatlari[rakipIndex] !== undefined) {
+                                    const rakipFiyati = urun.rakipFiyatlari[rakipIndex];
+                                    const bizimFiyat = urun.bizimFiyat || 0;
+                                    
+                                    // Eğer rakip fiyatı bizim fiyatımızdan ucuzsa kırmızı yap ve gölgelendirme ekle
+                                    if (rakipFiyati < bizimFiyat) {
+                                        rowHTML += `<td class="text-end" style="color: #dc3545; font-weight: bold; text-shadow: 0 0 3px rgba(220, 53, 69, 0.5), 0 0 6px rgba(220, 53, 69, 0.3);">${formatCurrency(rakipFiyati)}</td>`;
+                                    } else {
+                                        rowHTML += `<td class="text-end">${formatCurrency(rakipFiyati)}</td>`;
+                                    }
+                                } else {
+                                    rowHTML += '<td class="text-end text-muted">-</td>';
+                                }
+                            } else {
+                                rowHTML += '<td class="text-end text-muted">-</td>';
+                            }
+                        });
+                        
+                        rowHTML += '</tr>';
+                        return rowHTML;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Henüz rakip analizi verisi bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Rakip analizi yüklenirken hata:', error);
+                console.error('Error stack:', error.stack);
+                const tbody = document.getElementById('rakiplerTable');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-danger py-4">Veri yüklenirken hata oluştu: ' + escapeHtml(error.message) + '</td></tr>';
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRakipAnalizi();
+        });
+    </script>
+</body>
+</html>
+

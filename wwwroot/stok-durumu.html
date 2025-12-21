@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUBAT OTO - Stok Durumu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/metronic-style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-cog"></i> KUBAT OTO</h3>
+        </div>
+        <ul class="sidebar-menu">
+                <li><a href="/index.html"><i class="fas fa-tachometer-alt"></i> Genel Bakış</a></li>
+            <li><a href="/satislar.html"><i class="fas fa-shopping-cart"></i> Satışlar</a></li>
+            <li><a href="/tedarikciler.html"><i class="fas fa-truck"></i> Tedarikçiler</a></li>
+            <li><a href="/stok-durumu.html" class="active"><i class="fas fa-boxes"></i> Stok Durumu</a></li>
+            <li><a href="/rakipler.html"><i class="fas fa-chart-bar"></i> Rakip Analizi</a></li>
+            <li><a href="/iadeler.html"><i class="fas fa-undo"></i> İadeler</a></li>
+            <li><a href="/musteriler.html"><i class="fas fa-users"></i> Müşteriler</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-boxes me-2"></i>Stok Durumu</h1>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-list me-2"></i>Stok Listesi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ürün Adı</th>
+                                        <th>Stok Miktarı</th>
+                                        <th>Alış Fiyatı</th>
+                                        <th>Satış Fiyatı</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stokTable">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(num);
+        }
+
+        async function loadStoklar() {
+            try {
+                const response = await fetch('/api/stok/durumu');
+                const json = await response.json();
+                
+                const tbody = document.getElementById('stokTable');
+                if (json.success && json.data && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(stok => {
+                        const durumClass = stok.stokDurumu === 'Kritik' ? 'bg-danger text-white' : 
+                                         stok.stokDurumu === 'Düşük' ? 'bg-warning text-white' : 
+                                         'bg-success text-white';
+                        const durumText = stok.stokDurumu === 'Kritik' ? 'Kritik' : 
+                                         stok.stokDurumu === 'Düşük' ? 'Düşük' : 
+                                         'Normal';
+                        
+                        return `
+                            <tr>
+                                <td>${stok.urunAdi}</td>
+                                <td>${stok.stokMiktari}</td>
+                                <td>${formatCurrency(stok.alisFiyati)}</td>
+                                <td>${formatCurrency(stok.satisFiyati)}</td>
+                                <td><span class="badge ${durumClass}">${durumText}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Henüz stok bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Stok durumu yüklenirken hata:', error);
+                document.getElementById('stokTable').innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Veri yüklenirken hata oluştu.</td></tr>';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStoklar();
+        });
+    </script>
+</body>
+</html>
+

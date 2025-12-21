@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUBAT OTO - Tedarikçiler</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/metronic-style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-cog"></i> KUBAT OTO</h3>
+        </div>
+        <ul class="sidebar-menu">
+                <li><a href="/index.html"><i class="fas fa-tachometer-alt"></i> Genel Bakış</a></li>
+            <li><a href="/satislar.html"><i class="fas fa-shopping-cart"></i> Satışlar</a></li>
+            <li><a href="/tedarikciler.html" class="active"><i class="fas fa-truck"></i> Tedarikçiler</a></li>
+            <li><a href="/stok-durumu.html"><i class="fas fa-boxes"></i> Stok Durumu</a></li>
+            <li><a href="/rakipler.html"><i class="fas fa-chart-bar"></i> Rakip Analizi</a></li>
+            <li><a href="/iadeler.html"><i class="fas fa-undo"></i> İadeler</a></li>
+            <li><a href="/musteriler.html"><i class="fas fa-users"></i> Müşteriler</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-truck me-2"></i>Tedarikçiler</h1>
+        </div>
+        
+        <!-- Tedarikçi Listesi -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0 fw-bold">Tedarikçiler</h4>
+                            <small class="text-muted" id="tedarikciOrtalama">Ortalama sipariş oranı hesaplanıyor...</small>
+                        </div>
+                        <button class="btn btn-light btn-sm">Tüm Tedarikçiler</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="tedarikcilerListesi">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-spinner fa-spin me-2"></i>
+                                Yükleniyor...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Son Tedarik Siparişleri -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-shopping-bag me-2"></i>Son Tedarik Siparişleri</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Sipariş No</th>
+                                        <th>Tedarikçi</th>
+                                        <th>Toplam Tutar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="siparislerTable">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(num);
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('tr-TR').format(num);
+        }
+
+        function getTedarikciImage(tedarikciID, tedarikciAdi) {
+            const ozelEslesmeler = {
+                'Federal Mogul': { dosya: 'federalmogul', uzanti: 'jpeg' },
+                'ZF Services Türk': { dosya: 'zfservice', uzanti: 'png' },
+                'Mann Hummel Filtre': { dosya: 'mannhummel', uzanti: 'png' },
+                'Otokoç Genel Merkez': { dosya: 'otokoç', uzanti: 'jpeg' },
+                'Maysan Mando': { dosya: 'maysanmando', uzanti: 'png' },
+                'Kale Radyatör': { dosya: 'kaleradyator', uzanti: 'png' }
+            };
+            
+            if (ozelEslesmeler[tedarikciAdi]) {
+                const eslesme = ozelEslesmeler[tedarikciAdi];
+                return `/images/tedarikciler/${eslesme.dosya}.${eslesme.uzanti}`;
+            }
+            
+            const ilkKelime = tedarikciAdi.trim().split(/\s+/)[0];
+            const dosyaAdi = ilkKelime
+                .toLowerCase()
+                .replace(/ç/g, 'c')
+                .replace(/ğ/g, 'g')
+                .replace(/ı/g, 'i')
+                .replace(/ö/g, 'o')
+                .replace(/ş/g, 's')
+                .replace(/ü/g, 'u')
+                .replace(/[^a-z0-9]/g, '');
+            
+            return `/images/tedarikciler/${dosyaAdi}.png`;
+        }
+
+        async function loadTedarikciler() {
+            try {
+                const response = await fetch('/api/tedarikci');
+                const json = await response.json();
+                
+                const listeContainer = document.getElementById('tedarikcilerListesi');
+                const ortalamaContainer = document.getElementById('tedarikciOrtalama');
+                
+                if (json.success && json.data && json.data.length > 0) {
+                    // Ortalama yüzde hesapla
+                    const ortalamaYuzde = json.data.reduce((sum, item) => sum + (item.yuzde || 0), 0) / json.data.length;
+                    if (ortalamaContainer) {
+                        ortalamaContainer.textContent = `Ort. ${ortalamaYuzde.toFixed(0)}% sipariş oranı`;
+                    }
+                    
+                    // Farklı renk paleti - her tedarikçi için farklı renk
+                    const progressColors = [
+                        '#28a745', // Yeşil
+                        '#ffc107', // Sarı
+                        '#0ea5e9', // Sky Blue
+                        '#9966FF', // Mor
+                        '#dc3545', // Kırmızı
+                        '#17a2b8', // Turkuaz
+                        '#fd7e14', // Turuncu
+                        '#e83e8c', // Pembe
+                        '#20c997', // Açık Yeşil
+                        '#0ea5e9', // Sky Blue
+                        '#f39c12', // Altın
+                        '#e74c3c', // Koyu Kırmızı
+                        '#3498db', // Açık Mavi
+                        '#1abc9c', // Deniz Yeşili
+                        '#9b59b6'  // Mor
+                    ];
+                    
+                    // Liste formatında göster
+                    let listeHTML = '';
+                    json.data.forEach((tedarikci, index) => {
+                        const imagePath = getTedarikciImage(tedarikci.tedarikciID, tedarikci.tedarikciAdi);
+                        const yuzde = tedarikci.yuzde || 0;
+                        const toplamUrun = tedarikci.toplamUrunSayisi || 0;
+                        
+                        // Her tedarikçi için farklı renk (index'e göre)
+                        const progressColor = progressColors[index % progressColors.length];
+                        
+                        listeHTML += `
+                            <div class="d-flex align-items-center p-3 border-bottom" style="border-bottom: 1px solid #e4e6ef !important;">
+                                <div class="me-3">
+                                    <img src="${imagePath}" 
+                                         alt="${tedarikci.tedarikciAdi}" 
+                                         style="width: 48px; height: 48px; object-fit: contain; background: #f5f8fa; border-radius: 8px; padding: 8px;"
+                                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'48\\'%3E%3Crect width=\\'48\\' height=\\'48\\' fill=\\'%23f5f8fa\\' rx=\\'8\\'/%3E%3Ctext x=\\'24\\' y=\\'24\\' text-anchor=\\'middle\\' dy=\\'.3em\\' font-family=\\'Arial\\' font-size=\\'12\\' fill=\\'%23666\\'%3E${tedarikci.tedarikciAdi.substring(0, 6)}%3C/text%3E%3C/svg%3E';">
+                                </div>
+                                <div class="flex-grow-1 d-flex justify-content-between align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-bold" style="font-size: 1rem; color: #181c32;">${tedarikci.tedarikciAdi}</h6>
+                                        <small class="text-muted d-block mb-2">${formatNumber(toplamUrun)} ürün sipariş edildi</small>
+                                        <div class="progress" style="height: 8px; background-color: #f1f1f2; border-radius: 4px; width: 100%; max-width: 700px;">
+                                            <div class="progress-bar" 
+                                                 role="progressbar" 
+                                                 style="width: ${yuzde}%; background-color: ${progressColor}; border-radius: 4px;" 
+                                                 aria-valuenow="${yuzde}" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-end ms-3" style="min-width: 60px;">
+                                        <span class="fw-bold" style="font-size: 1rem; color: #181c32;">${yuzde.toFixed(0)}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    if (listeContainer) {
+                        listeContainer.innerHTML = listeHTML;
+                    }
+                } else {
+                    if (listeContainer) {
+                        listeContainer.innerHTML = '<div class="text-center text-muted py-4">Henüz tedarikçi bulunmamaktadır.</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Tedarikçiler yüklenirken hata:', error);
+                const listeContainer = document.getElementById('tedarikcilerListesi');
+                if (listeContainer) {
+                    listeContainer.innerHTML = '<div class="text-center text-danger py-4">Veri yüklenirken hata oluştu.</div>';
+                }
+            }
+        }
+
+        async function loadSiparisler() {
+            try {
+                const response = await fetch('/api/tedarikci/siparisler');
+                const json = await response.json();
+                
+                const tbody = document.getElementById('siparislerTable');
+                if (json.success && json.data && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(siparis => {
+                        const tarih = new Date(siparis.siparisTarihi);
+                        return `
+                            <tr>
+                                <td>${tarih.toLocaleDateString('tr-TR')}</td>
+                                <td>#${siparis.siparisID}</td>
+                                <td>${siparis.tedarikciAdi}</td>
+                                <td>${formatCurrency(siparis.toplamTutar)}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Henüz sipariş bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Siparişler yüklenirken hata:', error);
+                document.getElementById('siparislerTable').innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">Veri yüklenirken hata oluştu.</td></tr>';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTedarikciler();
+            loadSiparisler();
+        });
+    </script>
+</body>
+</html>
+

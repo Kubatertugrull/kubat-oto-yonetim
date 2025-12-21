@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUBAT OTO - Müşteriler</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/metronic-style.css">
+    <style>
+        #izmirHaritasi {
+            height: 500px;
+            width: 100%;
+            border-radius: 8px;
+            z-index: 1;
+        }
+        .ilce-musteri-listesi {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-cog"></i> KUBAT OTO</h3>
+        </div>
+        <ul class="sidebar-menu">
+                <li><a href="/index.html"><i class="fas fa-tachometer-alt"></i> Genel Bakış</a></li>
+            <li><a href="/satislar.html"><i class="fas fa-shopping-cart"></i> Satışlar</a></li>
+            <li><a href="/tedarikciler.html"><i class="fas fa-truck"></i> Tedarikçiler</a></li>
+            <li><a href="/stok-durumu.html"><i class="fas fa-boxes"></i> Stok Durumu</a></li>
+            <li><a href="/rakipler.html"><i class="fas fa-chart-bar"></i> Rakip Analizi</a></li>
+            <li><a href="/iadeler.html"><i class="fas fa-undo"></i> İadeler</a></li>
+            <li><a href="/musteriler.html" class="active"><i class="fas fa-users"></i> Müşteriler</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-users me-2"></i>Müşteriler</h1>
+        </div>
+
+        <!-- En Çok Satış Yapan ve En Çok Kar Eden Müşteriler -->
+        <div class="row mb-4">
+            <!-- En Çok Satış Yapan 3 Müşteri -->
+            <div class="col-md-6 mb-4 d-flex">
+                <div class="card" style="width: 100%; display: flex; flex-direction: column;">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-chart-line me-2"></i>En Çok Satış Yapılan 3 Müşteri</h5>
+                    </div>
+                    <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column;">
+                        <div class="table-responsive" style="flex-grow: 1;">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Müşteri Adı</th>
+                                        <th>Toplam Ürün</th>
+                                        <th>Toplam Ciro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enCokSatisYapanTable">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- En Çok Kar Eden 3 Müşteri -->
+            <div class="col-md-6 mb-4 d-flex">
+                <div class="card" style="width: 100%; display: flex; flex-direction: column;">
+                    <div class="card-header bg-success">
+                        <h5 class="mb-0 text-white"><i class="fas fa-dollar-sign me-2"></i>En Çok Kar Ettiren 3 Müşteri</h5>
+                    </div>
+                    <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column;">
+                        <div class="table-responsive" style="flex-grow: 1;">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Müşteri Adı</th>
+                                        <th>Toplam Kar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enCokKarEdenTable">
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- İzmir İlçe Haritası -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>İzmir İlçe Müşteri Dağılımı</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div id="izmirHaritasi"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="mb-3" id="ilceSecilenBaslik">İlçe Seçin</h6>
+                                <div class="ilce-musteri-listesi" id="ilceMusteriListesi">
+                                    <p class="text-muted text-center py-4">Haritadan bir ilçe seçin</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        function formatNumber(num) {
+            return new Intl.NumberFormat('tr-TR').format(num);
+        }
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(num);
+        }
+
+        async function loadEnCokSatisYapanMusteriler() {
+            try {
+                const response = await fetch('/api/musteri/en-cok-satis-yapan');
+                const json = await response.json();
+                
+                const tbody = document.getElementById('enCokSatisYapanTable');
+                if (json.success && json.data && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(musteri => `
+                        <tr>
+                            <td>${musteri.adSoyad}</td>
+                            <td>${formatNumber(musteri.toplamUrunSayisi)}</td>
+                            <td>${formatCurrency(musteri.toplamCiro)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Henüz veri bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('En çok satış yapan müşteriler yüklenirken hata:', error);
+                document.getElementById('enCokSatisYapanTable').innerHTML = '<tr><td colspan="3" class="text-center text-danger py-4">Veri yüklenirken hata oluştu.</td></tr>';
+            }
+        }
+
+        async function loadEnCokKarEdenMusteriler() {
+            try {
+                const response = await fetch('/api/musteri/en-cok-kar-eden');
+                const json = await response.json();
+                
+                const tbody = document.getElementById('enCokKarEdenTable');
+                if (json.success && json.data && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(musteri => `
+                        <tr>
+                            <td>${musteri.adSoyad}</td>
+                            <td>${formatCurrency(musteri.toplamKar)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted py-4">Henüz veri bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('En çok kar eden müşteriler yüklenirken hata:', error);
+                document.getElementById('enCokKarEdenTable').innerHTML = '<tr><td colspan="2" class="text-center text-danger py-4">Veri yüklenirken hata oluştu.</td></tr>';
+            }
+        }
+
+        // İzmir ilçe sınırları (GeoJSON formatında, daha gerçekçi koordinatlar)
+        const izmirIlceleriGeoJSON = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": { "name": "Bornova" },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [27.15, 38.43],
+                            [27.22, 38.43],
+                            [27.22, 38.46],
+                            [27.18, 38.46],
+                            [27.15, 38.44],
+                            [27.15, 38.43]
+                        ]]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": { "name": "Buca" },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [27.16, 38.32],
+                            [27.23, 38.32],
+                            [27.23, 38.38],
+                            [27.18, 38.38],
+                            [27.16, 38.35],
+                            [27.16, 38.32]
+                        ]]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": { "name": "Karşıyaka" },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [27.08, 38.44],
+                            [27.15, 38.44],
+                            [27.15, 38.48],
+                            [27.12, 38.48],
+                            [27.08, 38.46],
+                            [27.08, 38.44]
+                        ]]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": { "name": "Konak" },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [27.11, 38.36],
+                            [27.18, 38.36],
+                            [27.18, 38.40],
+                            [27.14, 38.40],
+                            [27.11, 38.38],
+                            [27.11, 38.36]
+                        ]]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": { "name": "Bayraklı" },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [27.10, 38.42],
+                            [27.17, 38.42],
+                            [27.17, 38.46],
+                            [27.13, 38.46],
+                            [27.10, 38.44],
+                            [27.10, 38.42]
+                        ]]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": { "name": "Balçova" },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [27.02, 38.35],
+                            [27.08, 38.35],
+                            [27.08, 38.38],
+                            [27.05, 38.38],
+                            [27.02, 38.36],
+                            [27.02, 38.35]
+                        ]]
+                    }
+                }
+            ]
+        };
+
+        let harita = null;
+        let ilceLayerlar = {};
+        let ilceMusteriSayilari = {};
+
+        // Renk fonksiyonu (müşteri sayısına göre - choropleth)
+        function getIlceRengi(musteriSayisi, maxMusteri) {
+            if (musteriSayisi === 0) {
+                return '#f0f0f0'; // Açık gri
+            }
+            // Mavi tonlarından kırmızı tonlarına geçiş (choropleth)
+            const intensity = musteriSayisi / maxMusteri;
+            
+            if (intensity >= 0.75) {
+                // En koyu kırmızı (4 müşteri - Bornova)
+                return '#8B0000';
+            } else if (intensity >= 0.5) {
+                // Koyu kırmızı (3 müşteri)
+                return '#CD0000';
+            } else if (intensity >= 0.25) {
+                // Orta kırmızı (2 müşteri - Buca)
+                return '#FF4500';
+            } else {
+                // Açık kırmızı/turuncu (1 müşteri)
+                return '#FF6347';
+            }
+        }
+
+        async function loadIzmirHaritasi() {
+            try {
+                console.log('Harita yükleniyor...');
+                
+                // İlçe dağılımını al
+                const response = await fetch('/api/musteri/ilce-dagilimi');
+                const json = await response.json();
+                
+                console.log('İlçe dağılımı API yanıtı:', json);
+                
+                if (json.success && json.data) {
+                    // İlçe müşteri sayılarını map'e çevir
+                    json.data.forEach(item => {
+                        ilceMusteriSayilari[item.ilce] = item.musteriSayisi;
+                    });
+                    console.log('İlçe müşteri sayıları:', ilceMusteriSayilari);
+                } else {
+                    console.warn('İlçe dağılımı verisi bulunamadı');
+                }
+
+                // Haritayı oluştur
+                if (!document.getElementById('izmirHaritasi')) {
+                    console.error('Harita container bulunamadı!');
+                    return;
+                }
+
+                harita = L.map('izmirHaritasi', {
+                    zoomControl: true,
+                    center: [38.4237, 27.1428],
+                    zoom: 11
+                });
+                
+                console.log('Harita oluşturuldu');
+                
+                // OpenStreetMap tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(harita);
+
+                // En yüksek müşteri sayısını bul
+                const maxMusteri = Math.max(...Object.values(ilceMusteriSayilari), 1);
+                console.log('Max müşteri sayısı:', maxMusteri);
+
+                // GeoJSON layer oluştur ve her feature için stil uygula
+                L.geoJSON(izmirIlceleriGeoJSON, {
+                    style: function(feature) {
+                        const ilceAdi = feature.properties.name;
+                        const musteriSayisi = ilceMusteriSayilari[ilceAdi] || 0;
+                        const renk = getIlceRengi(musteriSayisi, maxMusteri);
+                        
+                        return {
+                            color: '#fff',
+                            weight: 2,
+                            fillColor: renk,
+                            fillOpacity: 0.7
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const ilceAdi = feature.properties.name;
+                        const musteriSayisi = ilceMusteriSayilari[ilceAdi] || 0;
+                        
+                        // Tooltip ekle (hover'da gösterilecek)
+                        layer.bindTooltip(`
+                            <strong>${ilceAdi}</strong><br>
+                            ${musteriSayisi} Servis
+                        `, {
+                            permanent: false,
+                            direction: 'center',
+                            className: 'ilce-tooltip',
+                            offset: [0, 0]
+                        });
+
+                        // Tıklama eventi
+                        layer.on('click', function(e) {
+                            console.log('İlçe tıklandı:', ilceAdi);
+                            loadIlceMusterileri(ilceAdi);
+                            
+                            // Tıklanan ilçeyi vurgula
+                            e.target.setStyle({
+                                fillOpacity: 0.9,
+                                weight: 4,
+                                color: '#000'
+                            });
+                        });
+
+                        // Hover efektleri
+                        layer.on('mouseover', function(e) {
+                            const layer = e.target;
+                            layer.setStyle({
+                                fillOpacity: 0.9,
+                                weight: 3,
+                                color: '#000'
+                            });
+                            
+                            // Tooltip'i göster
+                            layer.openTooltip();
+                        });
+
+                        layer.on('mouseout', function(e) {
+                            const layer = e.target;
+                            layer.setStyle({
+                                fillOpacity: 0.7,
+                                weight: 2,
+                                color: '#fff'
+                            });
+                            
+                            // Tooltip'i gizle
+                            layer.closeTooltip();
+                        });
+
+                        ilceLayerlar[ilceAdi] = layer;
+                    }
+                }).addTo(harita);
+
+                console.log('GeoJSON layer eklendi');
+
+            } catch (error) {
+                console.error('Harita yüklenirken hata:', error);
+                console.error('Hata detayı:', error.stack);
+            }
+        }
+
+        async function loadIlceMusterileri(ilceAdi) {
+            try {
+                console.log('İlçe müşterileri yükleniyor:', ilceAdi);
+                const response = await fetch(`/api/musteri/ilce/${encodeURIComponent(ilceAdi)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const json = await response.json();
+                console.log('İlçe müşterileri API yanıtı:', json);
+                
+                const baslik = document.getElementById('ilceSecilenBaslik');
+                const liste = document.getElementById('ilceMusteriListesi');
+                
+                if (baslik) {
+                    baslik.textContent = `${ilceAdi} - Müşteriler`;
+                }
+
+                if (json.success && json.data && json.data.length > 0) {
+                    let html = '<ul class="list-group list-group-flush">';
+                    json.data.forEach(musteri => {
+                        html += `
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2">
+                                        <div style="width: 32px; height: 32px; background: #0ea5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.75rem;">
+                                            ${getMusteriInitials(musteri.adSoyad)}
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <strong>${musteri.adSoyad}</strong>
+                                        ${musteri.musteriTipi ? `<br><small class="text-muted">${musteri.musteriTipi}</small>` : ''}
+                                    </div>
+                                </div>
+                            </li>
+                        `;
+                    });
+                    html += '</ul>';
+                    
+                    if (liste) {
+                        liste.innerHTML = html;
+                    }
+                } else {
+                    if (liste) {
+                        liste.innerHTML = '<p class="text-muted text-center py-4">Bu ilçede müşteri bulunamadı.</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('İlçe müşterileri yüklenirken hata:', error);
+                console.error('Hata detayı:', error.stack);
+                const liste = document.getElementById('ilceMusteriListesi');
+                if (liste) {
+                    liste.innerHTML = '<p class="text-danger text-center py-4">Veri yüklenirken hata oluştu: ' + error.message + '</p>';
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadEnCokSatisYapanMusteriler();
+            loadEnCokKarEdenMusteriler();
+            // Haritayı biraz gecikmeyle yükle
+            setTimeout(() => {
+                loadIzmirHaritasi();
+            }, 300);
+        });
+    </script>
+</body>
+</html>
+

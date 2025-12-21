@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUBAT OTO - Genel Bakış</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/metronic-style.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-cog"></i> KUBAT OTO</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="/index.html" class="active"><i class="fas fa-tachometer-alt"></i> Genel Bakış</a></li>
+                <li><a href="/satislar.html"><i class="fas fa-shopping-cart"></i> Satışlar</a></li>
+                <li><a href="/tedarikciler.html"><i class="fas fa-truck"></i> Tedarikçiler</a></li>
+                <li><a href="/stok-durumu.html"><i class="fas fa-boxes"></i> Stok Durumu</a></li>
+                <li><a href="/rakipler.html"><i class="fas fa-chart-bar"></i> Rakip Analizi</a></li>
+                <li><a href="/iadeler.html"><i class="fas fa-undo"></i> İadeler</a></li>
+                <li><a href="/musteriler.html"><i class="fas fa-users"></i> Müşteriler</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1><i class="fas fa-tachometer-alt me-2"></i>Genel Bakış</h1>
+            </div>
+
+        <!-- KPI Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-4 d-flex">
+                <div class="card kpi-card h-100" style="display: flex; flex-direction: column;">
+                    <div class="card-body" style="display: flex; flex-direction: column; flex-grow: 1; gap: 1rem;">
+                        <!-- İkon -->
+                        <div style="display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                            <div class="kpi-icon" style="width: 50px; height: 50px; background: #0ea5e9; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-lira-sign fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <!-- Başlık (Sabit yükseklik) -->
+                        <h6 class="text-muted text-uppercase mb-0" style="font-size: 0.75rem; font-weight: 600; min-height: 3rem; display: flex; align-items: center; justify-content: center; text-align: center; flex-shrink: 0;">TOPLAM YILLIK CİRO</h6>
+                        <!-- Büyük Rakam -->
+                        <div style="flex-grow: 1; display: flex; align-items: flex-start; justify-content: center;">
+                            <h3 class="mb-0 fw-bold" id="toplamCiro" style="white-space: nowrap; font-size: 1.5rem; line-height: 1.2; color: #0ea5e9;">0</h3>
+                        </div>
+                        <!-- Alt Açıklama -->
+                        <small class="text-muted text-center" id="ciroTarih" style="flex-shrink: 0;">2025 Yılı</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4 d-flex">
+                <div class="card kpi-card h-100" style="display: flex; flex-direction: column;">
+                    <div class="card-body" style="display: flex; flex-direction: column; flex-grow: 1; gap: 1rem;">
+                        <!-- İkon -->
+                        <div style="display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                            <div class="kpi-icon" style="width: 50px; height: 50px; background: #28a745; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chart-line fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <!-- Başlık (Sabit yükseklik) -->
+                        <h6 class="text-muted text-uppercase mb-0" style="font-size: 0.75rem; font-weight: 600; min-height: 3rem; display: flex; align-items: center; justify-content: center; text-align: center; flex-shrink: 0;">YILLIK NET KÂR</h6>
+                        <!-- Büyük Rakam -->
+                        <div style="flex-grow: 1; display: flex; align-items: flex-start; justify-content: center;">
+                            <h3 class="mb-0 fw-bold" id="netKar" style="white-space: nowrap; font-size: 1.5rem; line-height: 1.2; color: #28a745;">0</h3>
+                        </div>
+                        <!-- Alt Açıklama -->
+                        <small class="text-muted text-center" id="karTarih" style="flex-shrink: 0;">2025 Yılı</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4 d-flex">
+                <div class="card kpi-card h-100" style="display: flex; flex-direction: column;">
+                    <div class="card-body" style="display: flex; flex-direction: column; flex-grow: 1; gap: 1rem;">
+                        <!-- İkon -->
+                        <div style="display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                            <div class="kpi-icon" style="width: 50px; height: 50px; background: #ffc107; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-redo fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <!-- Başlık (Sabit yükseklik) -->
+                        <h6 class="text-muted text-uppercase mb-0" style="font-size: 0.75rem; font-weight: 600; min-height: 3rem; display: flex; align-items: center; justify-content: center; text-align: center; flex-shrink: 0;">İADE ORANI</h6>
+                        <!-- Büyük Rakam -->
+                        <div style="flex-grow: 1; display: flex; align-items: flex-start; justify-content: center;">
+                            <h3 class="mb-0 fw-bold" id="iadeOrani" style="color: #ffc107;">%0</h3>
+                        </div>
+                        <!-- Alt Açıklama -->
+                        <small class="text-muted text-center" style="flex-shrink: 0;">Toplam satışların yüzdesi</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4 d-flex">
+                <div class="card kpi-card h-100" style="display: flex; flex-direction: column;">
+                    <div class="card-body" style="display: flex; flex-direction: column; flex-grow: 1; gap: 1rem;">
+                        <!-- İkon -->
+                        <div style="display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                            <div class="kpi-icon" style="width: 50px; height: 50px; background: #dc3545; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-exclamation-triangle fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <!-- Başlık (Sabit yükseklik) -->
+                        <h6 class="text-muted text-uppercase mb-0" style="font-size: 0.75rem; font-weight: 600; min-height: 3rem; display: flex; align-items: center; justify-content: center; text-align: center; flex-shrink: 0;">KRİTİK STOKTAKİ ÜRÜNLER</h6>
+                        <!-- Büyük Rakam -->
+                        <div style="flex-grow: 1; display: flex; align-items: flex-start; justify-content: center;">
+                            <h3 class="mb-0 fw-bold" id="kritikStok" style="color: #dc3545;">0</h3>
+                        </div>
+                        <!-- Alt Açıklama -->
+                        <small class="text-muted text-center" style="flex-shrink: 0;">Stok seviyesi kritik</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Aylık Satış Trendi Grafiği -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-chart-area me-2"></i>2025 Yılı Aylık Satış Trendi</h5>
+                        </div>
+                        <div class="card-body" style="position: relative; height: 450px; padding: 20px;">
+                            <div style="height: 100%; width: 100%;">
+                                <canvas id="aylikSatislarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Format currency function (kuruşsuz)
+        function formatCurrency(num) {
+            const numValue = parseFloat(num) || 0;
+            return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(numValue);
+        }
+
+        // Format number function (TL sembolü olmadan)
+        function formatNumber(num) {
+            const numValue = parseFloat(num) || 0;
+            return new Intl.NumberFormat('tr-TR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(numValue);
+        }
+
+        // Dashboard verilerini yükle
+        async function loadDashboardSummary() {
+            try {
+                const response = await fetch('/api/dashboard/summary');
+                const json = await response.json();
+                
+                console.log('Dashboard API Response:', json);
+                
+                if (json.success && json.data) {
+                    const data = json.data;
+                    console.log('Dashboard Data:', data);
+                    
+                    document.getElementById('toplamCiro').textContent = formatNumber(data.toplamCiro || 0);
+                    document.getElementById('netKar').textContent = formatNumber(data.toplamKar || 0);
+                    document.getElementById('kritikStok').textContent = data.kritikStok || 0;
+                    
+                    // İade oranı hesapla
+                    let iadeOrani = 0;
+                    try {
+                        const iadeResponse = await fetch('/api/iade/istatistikler');
+                        const iadeJson = await iadeResponse.json();
+                        console.log('İade API Response:', iadeJson);
+                        if (iadeJson.success && iadeJson.data && data.toplamSatis > 0) {
+                            iadeOrani = ((iadeJson.data.toplamIade || 0) / data.toplamSatis) * 100;
+                        }
+                    } catch (e) {
+                        console.error('İade oranı hesaplanamadı:', e);
+                    }
+                    document.getElementById('iadeOrani').textContent = '%' + iadeOrani.toFixed(2);
+                } else {
+                    console.error('API Error:', json.message || 'Unknown error');
+                    if (json.stackTrace) {
+                        console.error('Stack Trace:', json.stackTrace);
+                    }
+                }
+            } catch (error) {
+                console.error('Dashboard verisi yüklenirken hata:', error);
+            }
+        }
+
+        // Aylık satışlar grafiğini yükle
+        async function loadAylikSatislar() {
+            try {
+                console.log('=== loadAylikSatislar başlatılıyor ===');
+                
+                // Chart.js kontrolü
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js bulunamadı!');
+                    setTimeout(loadAylikSatislar, 200);
+                    return;
+                }
+                console.log('✅ Chart.js mevcut:', typeof Chart);
+                
+                const canvas = document.getElementById('aylikSatislarChart');
+                if (!canvas) {
+                    console.error('❌ Canvas elementi bulunamadı!');
+                    return;
+                }
+                console.log('✅ Canvas elementi bulundu:', canvas);
+                console.log('Canvas boyutu:', canvas.offsetWidth, 'x', canvas.offsetHeight);
+                console.log('Canvas parent:', canvas.parentElement);
+
+                const response = await fetch('/api/dashboard/aylik-satislar');
+                const json = await response.json();
+                
+                console.log('API yanıtı:', json);
+                
+                if (json.success && json.data && json.data.length > 0) {
+                    const data = json.data;
+                    console.log('Veri sayısı:', data.length);
+                    
+                    const aylar = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
+                                   'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+                    
+                    const labels = data.map(item => aylar[item.ay - 1] || `Ay ${item.ay}`);
+                    const ciroValues = data.map(item => {
+                        const val = item.ciro;
+                        if (val === null || val === undefined || isNaN(val)) return 0;
+                        return parseFloat(val);
+                    });
+                    const karValues = data.map(item => {
+                        const val = item.kar;
+                        if (val === null || val === undefined || isNaN(val)) return 0;
+                        return parseFloat(val);
+                    });
+                    
+                    console.log('İşlenmiş Labels:', labels);
+                    console.log('İşlenmiş Ciro değerleri:', ciroValues);
+                    console.log('İşlenmiş Kar değerleri:', karValues);
+
+                    console.log('Labels:', labels);
+                    console.log('Ciro değerleri:', ciroValues);
+                    console.log('Kar değerleri:', karValues);
+
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        console.error('Canvas context alınamadı!');
+                        return;
+                    }
+                    
+                    // Veri doğrulama
+                    if (ciroValues.length === 0 || karValues.length === 0) {
+                        console.error('❌ Veri dizileri boş!');
+                        return;
+                    }
+                    
+                    // Önceki grafik varsa yok et (destroy metodu kontrolü ile)
+                    if (window.aylikSatislarChart) {
+                        if (typeof window.aylikSatislarChart.destroy === 'function') {
+                            console.log('Önceki grafik yok ediliyor...');
+                            window.aylikSatislarChart.destroy();
+                        } else {
+                            console.log('Önceki grafik destroy metodu yok, null yapılıyor...');
+                            window.aylikSatislarChart = null;
+                        }
+                    }
+                    
+                    console.log('Yeni Line Chart (Çizgi Grafik) oluşturuluyor...');
+                    
+                    try {
+                        // Line Chart (Çizgi Grafik) oluştur
+                        window.aylikSatislarChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: 'Ciro',
+                                        data: ciroValues,
+                                        borderColor: '#28a745',
+                                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                                        borderWidth: 2,
+                                        fill: true,
+                                        tension: 0.4
+                                    },
+                                    {
+                                        label: 'Toplam Kar',
+                                        data: karValues,
+                                        borderColor: '#0ea5e9',
+                                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                                        borderWidth: 2,
+                                        fill: true,
+                                        tension: 0.4
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                let label = context.dataset.label || '';
+                                                if (label) {
+                                                    label += ': ';
+                                                }
+                                                label += '₺' + new Intl.NumberFormat('tr-TR').format(context.parsed.y);
+                                                return label;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            borderDash: [5, 5]
+                                        },
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '₺' + new Intl.NumberFormat('tr-TR').format(value);
+                                            }
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            borderDash: [5, 5]
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        console.log('✅ Grafik başarıyla oluşturuldu!', window.aylikSatislarChart);
+                    } catch (chartError) {
+                        console.error('❌ Grafik oluşturulurken hata:', chartError);
+                        console.error('Hata detayı:', chartError.stack);
+                    }
+                } else {
+                    console.error('Veri bulunamadı veya başarısız:', json);
+                }
+            } catch (error) {
+                console.error('Aylık satışlar yüklenirken hata:', error);
+                console.error('Hata detayı:', error.stack);
+            }
+        }
+
+        // Sayfa yüklendiğinde verileri çek
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sayfa yüklendi');
+            loadDashboardSummary();
+            
+            // Chart.js yüklenene kadar bekle
+            function waitForChartJs() {
+                if (typeof Chart !== 'undefined') {
+                    console.log('Chart.js hazır, grafik yükleniyor...');
+                    setTimeout(loadAylikSatislar, 200);
+                } else {
+                    console.log('Chart.js bekleniyor...');
+                    setTimeout(waitForChartJs, 100);
+                }
+            }
+            
+            // Script yüklendikten sonra başlat
+            if (document.readyState === 'loading') {
+                window.addEventListener('load', waitForChartJs);
+            } else {
+                waitForChartJs();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUBAT OTO - Satışlar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/metronic-style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-cog"></i> KUBAT OTO</h3>
+        </div>
+        <ul class="sidebar-menu">
+                <li><a href="/index.html"><i class="fas fa-tachometer-alt"></i> Genel Bakış</a></li>
+            <li><a href="/satislar.html" class="active"><i class="fas fa-shopping-cart"></i> Satışlar</a></li>
+            <li><a href="/tedarikciler.html"><i class="fas fa-truck"></i> Tedarikçiler</a></li>
+            <li><a href="/stok-durumu.html"><i class="fas fa-boxes"></i> Stok Durumu</a></li>
+            <li><a href="/rakipler.html"><i class="fas fa-chart-bar"></i> Rakip Analizi</a></li>
+            <li><a href="/iadeler.html"><i class="fas fa-undo"></i> İadeler</a></li>
+            <li><a href="/musteriler.html"><i class="fas fa-users"></i> Müşteriler</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-shopping-cart me-2"></i>Satışlar</h1>
+        </div>
+        <!-- En Çok Satılan ve En Çok Kar Edilen Ürünler -->
+        <div class="row mb-4">
+            <!-- En Çok Satılan 3 Ürün -->
+            <div class="col-md-6 mb-4 d-flex">
+                <div class="card" style="width: 100%; display: flex; flex-direction: column;">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-chart-line me-2"></i>En Çok Satılan 3 Ürün</h5>
+                    </div>
+                    <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column;">
+                        <div class="table-responsive" style="flex-grow: 1;">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ürün Adı</th>
+                                        <th>Toplam Miktar</th>
+                                        <th>Toplam Tutar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enCokSatilanTable">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- En Çok Kar Edilen 3 Ürün -->
+            <div class="col-md-6 mb-4 d-flex">
+                <div class="card" style="width: 100%; display: flex; flex-direction: column;">
+                    <div class="card-header bg-success">
+                        <h5 class="mb-0 text-white"><i class="fas fa-dollar-sign me-2"></i>En Çok Kar Edilen 3 Ürün</h5>
+                    </div>
+                    <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column;">
+                        <div class="table-responsive" style="flex-grow: 1;">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ürün Adı</th>
+                                        <th>Toplam Kar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enCokKarEdenTable">
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Son Satışlar Tablosu -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-shopping-cart me-2"></i>Son Satışlar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Fatura No</th>
+                                        <th>Ürün Sayısı</th>
+                                        <th>Tutar</th>
+                                        <th>Kar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="satislarTable">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(num);
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('tr-TR').format(num);
+        }
+
+        async function loadEnCokSatilanUrunler() {
+            try {
+                const response = await fetch('/api/dashboard/en-cok-satilan-urunler');
+                const json = await response.json();
+                
+                const tbody = document.getElementById('enCokSatilanTable');
+                if (json.success && json.data && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(urun => `
+                        <tr>
+                            <td>${urun.urunAdi}</td>
+                            <td>${formatNumber(urun.toplamMiktar)}</td>
+                            <td>${formatCurrency(urun.toplamTutar)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Henüz veri bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('En çok satılan ürünler yüklenirken hata:', error);
+                document.getElementById('enCokSatilanTable').innerHTML = '<tr><td colspan="3" class="text-center text-danger py-4">Veri yüklenirken hata oluştu.</td></tr>';
+            }
+        }
+
+        async function loadEnCokKarEdenUrunler() {
+            try {
+                const response = await fetch('/api/dashboard/en-cok-kar-eden-urunler');
+                const json = await response.json();
+                
+                const tbody = document.getElementById('enCokKarEdenTable');
+                if (json.success && json.data && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(urun => `
+                        <tr>
+                            <td>${urun.urunAdi}</td>
+                            <td>${formatCurrency(urun.toplamKar)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted py-4">Henüz veri bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('En çok kar eden ürünler yüklenirken hata:', error);
+                document.getElementById('enCokKarEdenTable').innerHTML = '<tr><td colspan="2" class="text-center text-danger py-4">Veri yüklenirken hata oluştu.</td></tr>';
+            }
+        }
+
+        async function loadSatislar() {
+            try {
+                const response = await fetch('/api/satis');
+                const json = await response.json();
+                
+                const tbody = document.getElementById('satislarTable');
+                if (json.success && json.data && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(satis => {
+                        const tarih = new Date(satis.satisTarihi);
+                        return `
+                            <tr>
+                                <td>${tarih.toLocaleDateString('tr-TR')}</td>
+                                <td>${satis.faturaNo}</td>
+                                <td>${satis.urunSayisi}</td>
+                                <td>${formatCurrency(satis.tutar)}</td>
+                                <td>${formatCurrency(satis.kar)}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Henüz satış bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Satışlar yüklenirken hata:', error);
+                document.getElementById('satislarTable').innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Veri yüklenirken hata oluştu.</td></tr>';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadEnCokSatilanUrunler();
+            loadEnCokKarEdenUrunler();
+            loadSatislar();
+        });
+    </script>
+</body>
+</html>
+

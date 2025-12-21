@@ -1,0 +1,80 @@
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio cache/options directory
+.vs/
+
+## Rider
+.idea/
+*.sln.iml
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build results
+*.dll
+*.exe
+*.pdb
+*.cache
+*.deps.json
+*.runtimeconfig.json
+*.staticwebassets.runtime.json
+
+## Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+## Environment files
+appsettings.Development.json
+.env
+.env.local
+
+## Database files
+*.db
+*.sqlite
+*.sqlite3
+
+## Temporary files
+*.tmp
+*.temp
+*~
+
+## OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Package files
+*.nupkg
+*.snupkg
+
+## Visual Studio Code
+.vscode/
+
+## NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+

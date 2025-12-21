@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUBAT OTO - İadeler</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/metronic-style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-cog"></i> KUBAT OTO</h3>
+        </div>
+        <ul class="sidebar-menu">
+                <li><a href="/index.html"><i class="fas fa-tachometer-alt"></i> Genel Bakış</a></li>
+            <li><a href="/satislar.html"><i class="fas fa-shopping-cart"></i> Satışlar</a></li>
+            <li><a href="/tedarikciler.html"><i class="fas fa-truck"></i> Tedarikçiler</a></li>
+            <li><a href="/stok-durumu.html"><i class="fas fa-boxes"></i> Stok Durumu</a></li>
+            <li><a href="/rakipler.html"><i class="fas fa-chart-bar"></i> Rakip Analizi</a></li>
+            <li><a href="/iadeler.html" class="active"><i class="fas fa-undo"></i> İadeler</a></li>
+            <li><a href="/musteriler.html"><i class="fas fa-users"></i> Müşteriler</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-undo me-2"></i>İadeler</h1>
+        </div>
+        
+        <!-- İade Nedenlerinin Dağılımı -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-chart-pie me-2"></i>İade Nedenlerinin Dağılımı</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center p-3 border rounded">
+                                    <div class="me-3">
+                                        <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 text-muted">Ürün Bozuk</h6>
+                                        <h4 class="mb-0 fw-bold" id="urunBozukSayisi">0</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center p-3 border rounded">
+                                    <div class="me-3">
+                                        <i class="fas fa-times-circle fa-2x text-danger"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 text-muted">Yanlış Parça Gönderimi</h6>
+                                        <h4 class="mb-0 fw-bold" id="yanlisParcaSayisi">0</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bozuk Ürünler - Tedarikçi Dağılımı -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-chart-pie me-2"></i>Bozuk Ürünler - Tedarikçi Dağılımı</h5>
+                    </div>
+                    <div class="card-body" id="tedarikciDagilimContainer">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-spinner fa-spin me-2"></i>
+                            Yükleniyor...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-chart-pie me-2"></i>Pasta Grafik</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="position: relative; height: 400px;">
+                            <canvas id="tedarikciDagilimChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Son İadeler -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0 text-white"><i class="fas fa-undo me-2"></i>Son İadeler</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>İade Tarihi</th>
+                                        <th>Fatura No</th>
+                                        <th>Ürün Adı</th>
+                                        <th>İade Nedeni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sonIadelerTable">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>
+                                            Yükleniyor...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function formatNumber(num) {
+            return new Intl.NumberFormat('tr-TR').format(num);
+        }
+
+        function getTedarikciImage(tedarikciID, tedarikciAdi) {
+            const ozelEslesmeler = {
+                'Federal Mogul': { dosya: 'federalmogul', uzanti: 'jpeg' },
+                'ZF Services Türk': { dosya: 'zfservice', uzanti: 'png' },
+                'Mann Hummel Filtre': { dosya: 'mannhummel', uzanti: 'png' },
+                'Otokoç Genel Merkez': { dosya: 'otokoç', uzanti: 'jpeg' },
+                'Maysan Mando': { dosya: 'maysanmando', uzanti: 'png' },
+                'Kale Radyatör': { dosya: 'kaleradyator', uzanti: 'png' }
+            };
+            
+            if (ozelEslesmeler[tedarikciAdi]) {
+                const eslesme = ozelEslesmeler[tedarikciAdi];
+                return `/images/tedarikciler/${eslesme.dosya}.${eslesme.uzanti}`;
+            }
+            
+            const ilkKelime = tedarikciAdi.trim().split(/\s+/)[0];
+            const dosyaAdi = ilkKelime
+                .toLowerCase()
+                .replace(/ç/g, 'c')
+                .replace(/ğ/g, 'g')
+                .replace(/ı/g, 'i')
+                .replace(/ö/g, 'o')
+                .replace(/ş/g, 's')
+                .replace(/ü/g, 'u')
+                .replace(/[^a-z0-9]/g, '');
+            
+            return `/images/tedarikciler/${dosyaAdi}.png`;
+        }
+
+        async function loadIadeIstatistikleri() {
+            try {
+                console.log('İade istatistikleri yükleniyor...');
+                const response = await fetch('/api/iade/istatistikler');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const json = await response.json();
+                
+                console.log('İade İstatistikleri API Response:', json);
+                
+                if (json.success && json.data) {
+                    const data = json.data;
+                    const urunBozukSayisiEl = document.getElementById('urunBozukSayisi');
+                    const yanlisParcaSayisiEl = document.getElementById('yanlisParcaSayisi');
+                    
+                    if (urunBozukSayisiEl) urunBozukSayisiEl.textContent = data.bozukUrunSayisi || 0;
+                    if (yanlisParcaSayisiEl) yanlisParcaSayisiEl.textContent = data.yanlisUrunSayisi || 0;
+                } else {
+                    console.warn('İade istatistikleri başarısız veya veri yok:', json);
+                }
+            } catch (error) {
+                console.error('İade istatistikleri yüklenirken hata:', error);
+            }
+        }
+
+        async function loadBozukUrunTedarikciDagilimi() {
+            try {
+                console.log('Bozuk ürün tedarikçi dağılımı yükleniyor...');
+                const response = await fetch('/api/iade/bozuk-urun-tedarikci-dagilimi');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const json = await response.json();
+                
+                console.log('Bozuk Ürün Tedarikçi Dağılımı API Response:', json);
+                
+                const container = document.getElementById('tedarikciDagilimContainer');
+                if (!container) {
+                    console.error('tedarikciDagilimContainer elementi bulunamadı!');
+                    return;
+                }
+                
+                if (json.success && json.data && json.data.length > 0) {
+                    const data = json.data;
+                    const toplam = data.reduce((sum, item) => sum + item.bozukUrunSayisi, 0);
+                    // Daha belirgin ve birbirinden farklı renkler
+                    const colors = [
+                        '#FF6384', // Kırmızı-Pembe
+                        '#36A2EB', // Mavi
+                        '#FFCE56', // Sarı
+                        '#4BC0C0', // Turkuaz
+                        '#9966FF', // Mor
+                        '#FF9F40', // Turuncu
+                        '#000000', // Siyah
+                        '#2ECC71', // Yeşil
+                        '#E74C3C', // Kırmızı
+                        '#9B59B6', // Mor-Lila
+                        '#1ABC9C', // Açık Yeşil
+                        '#F39C12', // Altın
+                        '#34495E', // Koyu Gri
+                        '#E67E22', // Kahverengi-Turuncu
+                        '#3498DB'  // Açık Mavi
+                    ];
+                    
+                    let html = '';
+                    data.forEach(item => {
+                        const yuzde = toplam > 0 ? ((item.bozukUrunSayisi / toplam) * 100).toFixed(2) : 0;
+                        const imagePath = getTedarikciImage(item.tedarikciID, item.tedarikciAdi);
+                        const color = colors[item.tedarikciID % colors.length];
+                        const email = item.eposta || '';
+                        const telefon = item.telefon || '';
+                        const gmailUrl = email ? `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}` : '#';
+                        
+                        html += `
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="d-flex align-items-center justify-content-center rounded overflow-hidden" 
+                                     style="width: 40px; height: 40px; background-color: ${color}20; margin-right: 12px; flex-shrink: 0;">
+                                    <img src="${imagePath}" 
+                                         alt="${item.tedarikciAdi}" 
+                                         style="width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block;"
+                                         onerror="this.onerror=null; this.style.display='none'; const container=this.parentElement; const color='${color}'; container.innerHTML='<div style=\\'width: 16px; height: 16px; background-color: '+color+'; border-radius: 4px;\\'></div>';">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span style="font-weight: 500; color: #5e6278;">${item.tedarikciAdi}:</span>
+                                        <div class="d-flex align-items-center" style="gap: 0.5rem;">
+                                            <span style="font-weight: 600; color: #181c32;">${yuzde}%</span>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-primary" type="button" id="contactBtn${item.tedarikciID}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fas fa-phone-alt me-1"></i> İletişim Kur
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="contactBtn${item.tedarikciID}">
+                                                    ${email ? `<li><a class="dropdown-item" href="${gmailUrl}" target="_blank"><i class="fas fa-envelope me-2"></i>Mail Gönder</a></li>` : ''}
+                                                    ${telefon ? `<li><a class="dropdown-item" href="tel:${telefon}"><i class="fas fa-phone me-2"></i>Telefon Görüşmesi</a></li>` : ''}
+                                                    ${!email && !telefon ? `<li><span class="dropdown-item-text text-muted"><i class="fas fa-info-circle me-2"></i>İletişim bilgisi bulunamadı</span></li>` : ''}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">${item.bozukUrunSayisi} ürün iade</small>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                    
+                    // Pasta grafik oluştur - Chart.js yüklendikten sonra
+                    setTimeout(() => {
+                        try {
+                            console.log('Grafik oluşturma başlıyor...');
+                            const chartCanvas = document.getElementById('tedarikciDagilimChart');
+                            console.log('Chart canvas:', chartCanvas);
+                            
+                            if (!chartCanvas) {
+                                console.error('tedarikciDagilimChart canvas elementi bulunamadı!');
+                                return;
+                            }
+                            
+                            // Chart.js yüklü mü kontrol et
+                            if (typeof Chart === 'undefined') {
+                                console.error('Chart.js henüz yüklenmemiş, bekleniyor...');
+                                // Chart.js yüklenene kadar bekle
+                                const checkChart = setInterval(() => {
+                                    if (typeof Chart !== 'undefined') {
+                                        clearInterval(checkChart);
+                                        createPieChart(chartCanvas, data, colors);
+                                    }
+                                }, 100);
+                                return;
+                            }
+                            
+                            createPieChart(chartCanvas, data, colors);
+                        } catch (chartError) {
+                            console.error('Grafik oluşturulurken hata:', chartError);
+                            console.error('Hata detayı:', chartError.stack);
+                        }
+                    }, 200);
+                    
+                    // Grafik oluşturma fonksiyonu
+                    function createPieChart(canvas, data, colors) {
+                        try {
+                            // Eğer önceki grafik varsa yok et
+                            if (window.tedarikciChart) {
+                                window.tedarikciChart.destroy();
+                                window.tedarikciChart = null;
+                            }
+                            
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) {
+                                console.error('Canvas context alınamadı!');
+                                return;
+                            }
+                            
+                            // Grafik için renkleri hazırla
+                            const chartColors = data.map((item) => colors[item.tedarikciID % colors.length]);
+                            const chartLabels = data.map(item => item.tedarikciAdi);
+                            const chartData = data.map(item => item.bozukUrunSayisi);
+                            
+                            console.log('Grafik verileri:', { labels: chartLabels, data: chartData });
+                            
+                            window.tedarikciChart = new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: chartLabels,
+                                    datasets: [{
+                                        label: 'İade Sayısı',
+                                        data: chartData,
+                                        backgroundColor: chartColors,
+                                        borderColor: '#fff',
+                                        borderWidth: 2
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                            labels: {
+                                                padding: 15,
+                                                font: {
+                                                    size: 12
+                                                },
+                                                usePointStyle: true
+                                            }
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const label = context.label || '';
+                                                    const value = context.parsed || 0;
+                                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                    const percentage = ((value / total) * 100).toFixed(2);
+                                                    return `${label}: ${value} ürün (${percentage}%)`;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            console.log('Pasta grafik başarıyla oluşturuldu');
+                        } catch (error) {
+                            console.error('createPieChart hatası:', error);
+                        }
+                    }
+                } else {
+                    container.innerHTML = '<div class="text-center text-muted py-4">Henüz bozuk ürün iadesi bulunmamaktadır.</div>';
+                }
+            } catch (error) {
+                console.error('Bozuk ürün tedarikçi dağılımı yüklenirken hata:', error);
+                const container = document.getElementById('tedarikciDagilimContainer');
+                if (container) {
+                    container.innerHTML = '<div class="text-center text-danger py-4">Veri yüklenirken hata oluştu: ' + error.message + '</div>';
+                }
+            }
+        }
+
+        async function loadSonIadeler() {
+            try {
+                console.log('Son iadeler yükleniyor...');
+                const response = await fetch('/api/iade');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const json = await response.json();
+                
+                console.log('Son İadeler API Response:', json);
+                
+                const tbody = document.getElementById('sonIadelerTable');
+                if (!tbody) {
+                    console.error('sonIadelerTable elementi bulunamadı!');
+                    return;
+                }
+                
+                if (json.success && json.data && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(iade => {
+                        const tarih = new Date(iade.iadeTarihi);
+                        return `
+                            <tr>
+                                <td>${tarih.toLocaleDateString('tr-TR')}</td>
+                                <td>${iade.faturaNo}</td>
+                                <td>${iade.urunAdi}</td>
+                                <td>${iade.iadeNedeni}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Henüz iade bulunmamaktadır.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Son iadeler yüklenirken hata:', error);
+                const tbody = document.getElementById('sonIadelerTable');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">Veri yüklenirken hata oluştu: ' + error.message + '</td></tr>';
+                }
+            }
+        }
+
+        // Sayfa yüklendiğinde verileri çek
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('İadeler sayfası yüklendi, veriler çekiliyor...');
+                loadIadeIstatistikleri();
+                loadBozukUrunTedarikciDagilimi();
+                loadSonIadeler();
+            });
+        } else {
+            // Sayfa zaten yüklüyse hemen çalıştır
+            console.log('İadeler sayfası zaten yüklü, veriler çekiliyor...');
+            loadIadeIstatistikleri();
+            loadBozukUrunTedarikciDagilimi();
+            loadSonIadeler();
+        }
+    </script>
+</body>
+</html>
+

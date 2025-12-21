@@ -1,0 +1,474 @@
+.chart-container {
+    padding-top: 0.5rem;
+}
+
+.fiyat-guncelle-btn {
+    width: 120px;
+    height: 38px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stok-kritik {
+    color: red;
+    font-weight: bold;
+}
+
+/* Metronic Theme Styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f1f1f2;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #181c32;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 265px;
+    background: #0f172a;
+    color: #94a3b8;
+    padding: 0;
+    box-shadow: 0 0 50px 0 rgba(15,23,42,.15);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 25px 25px 30px;
+    background: #0f172a;
+    border-bottom: 1px solid #1e293b;
+}
+
+.sidebar-header h3 {
+    color: #ffffff;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-header h3 i {
+    font-size: 1.5rem;
+    color: #0ea5e9;
+    margin-right: 8px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    margin: 0;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.sidebar-menu a:hover {
+    background-color: rgba(255,255,255,0.05);
+    color: #ffffff;
+    border-left-color: #0ea5e9;
+}
+
+.sidebar-menu a.active {
+    background-color: rgba(14,165,233,.15);
+    color: #0ea5e9;
+    border-left-color: #0ea5e9;
+}
+
+.sidebar-menu a i {
+    width: 28px;
+    font-size: 1.1rem;
+    margin-right: 12px;
+    text-align: center;
+}
+
+.main-content {
+    margin-left: 265px;
+    padding: 30px 40px;
+    min-height: 100vh;
+    background-color: #f1f1f2;
+}
+
+.main-content-no-sidebar {
+    padding: 30px 40px;
+    min-height: calc(100vh - 80px);
+    background-color: #f1f1f2;
+    margin-top: 80px;
+}
+
+/* Top Navigation Bar */
+.navbar-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e4e6ef;
+    z-index: 1000;
+    box-shadow: 0 1px 9px -3px rgba(0,0,0,.1);
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 30px;
+    max-width: 100%;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #5e6278;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+.logo-icon span {
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.logo-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #5e6278;
+    letter-spacing: -0.5px;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+}
+
+.navbar-nav li {
+    margin: 0;
+}
+
+.navbar-nav a {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #a1a5b7;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    border-radius: 0.475rem;
+}
+
+.navbar-nav a:hover {
+    color: #181c32;
+    background-color: #f1f1f2;
+}
+
+.navbar-nav a.active {
+    color: #181c32;
+    background-color: transparent;
+}
+
+.navbar-nav a.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    background-color: #28a745;
+    border-radius: 2px 2px 0 0;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar-icon-btn {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a1a5b7;
+    cursor: pointer;
+    border-radius: 0.475rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.navbar-icon-btn:hover {
+    background-color: #f1f1f2;
+    color: #181c32;
+}
+
+.navbar-notification {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: #0ea5e9;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+}
+
+.navbar-profile {
+    margin-left: 10px;
+}
+
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.475rem;
+    border: 2px solid #e4e6ef;
+    object-fit: cover;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.profile-img:hover {
+    border-color: #0ea5e9;
+}
+
+.navbar-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #28a745;
+    z-index: 999;
+}
+
+.page-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e4e6ef;
+}
+
+.page-header h1 {
+    font-size: 2.25rem;
+    font-weight: 600;
+    color: #181c32;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.page-header h1 i {
+    margin-right: 12px;
+    color: #0ea5e9;
+}
+
+/* Top Header */
+.top-header {
+    padding: 1rem 0;
+    border-bottom: 1px solid #e4e6ef;
+    margin-bottom: 2rem;
+}
+
+.top-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #181c32;
+}
+
+/* KPI Cards */
+.kpi-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-card .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 30px 0 rgba(76,87,125,.15) !important;
+}
+
+.kpi-card h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #181c32;
+}
+
+.kpi-card .text-muted {
+    font-size: 0.875rem;
+}
+
+/* Card Improvements */
+.card {
+    border: none;
+    border-radius: 0.625rem;
+    box-shadow: 0 0 20px 0 rgba(76,87,125,.1);
+    margin-bottom: 30px;
+    background: #ffffff;
+}
+
+.card-header {
+    border-bottom: 1px solid #e4e6ef;
+    padding: 1.5rem 1.75rem;
+    background: #ffffff;
+    border-radius: 0.625rem 0.625rem 0 0 !important;
+}
+
+.card-header.bg-primary {
+    background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0284c7 100%) !important;
+    border-bottom: none;
+}
+
+.card-header.bg-success {
+    background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #0ea5e9 100%) !important;
+    border-bottom: none;
+}
+
+.card-body {
+    padding: 1.75rem;
+}
+
+.card-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #a1a5b7;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+}
+
+.card h3, .card h5 {
+    margin: 0;
+}
+
+.card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Table Improvements */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    border-bottom: 1px solid #e4e6ef;
+    padding: 1rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #a1a5b7;
+    letter-spacing: 0.5px;
+}
+
+.table tbody td {
+    padding: 1rem 0.75rem;
+    border-top: 1px solid #f1f1f2;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.table-light {
+    background-color: #f9fafb;
+}
+
+/* Badge Improvements */
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-radius: 0.425rem;
+}
+
+/* Button Improvements */
+.btn {
+    border-radius: 0.475rem;
+    font-weight: 500;
+    padding: 0.65rem 1.25rem;
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
+}
+
+.btn-primary:hover {
+    background-color: #0284c7;
+    border-color: #0284c7;
+}
+
+/* Spacing */
+.mb-4 {
+    margin-bottom: 2rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1.5rem !important;
+}
+
