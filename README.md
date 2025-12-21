@@ -39,8 +39,8 @@ Bu proje, otomotiv yedek parça firmaları için geliştirilmiş kapsamlı bir y
 
 1. Projeyi klonlayın:
 ```bash
-git clone https://github.com/kullanici-adi/proje-adi.git
-cd proje-adi
+git clone https://github.com/Kubatertugrull/kubat-oto-yonetim.git
+cd kubat-oto-yonetim
 ```
 
 2. Veritabanı bağlantı bilgilerini `appsettings.json` dosyasında güncelleyin:
