@@ -1,0 +1,30 @@
+GitHub'a Yükleme İçin Yapılacaklar:
+=====================================
+
+1. Git kullanıcı bilgilerinizi ayarlayın (eğer global olarak ayarlamadıysanız):
+   
+   git config --global user.name "İsminiz"
+   git config --global user.email "email@example.com"
+
+2. GitHub'da yeni bir repository oluşturun:
+   - https://github.com adresine gidin
+   - "New repository" butonuna tıklayın
+   - Repository adını girin (örn: kubat-oto-yonetim)
+   - Public veya Private seçin
+   - README, .gitignore EKLEMEYİN (zaten var)
+   - "Create repository" tıklayın
+
+3. Projeyi GitHub'a bağlayın ve yükleyin:
+   
+   git remote add origin https://github.com/KULLANICI-ADI/REPOSITORY-ADI.git
+   git branch -M main
+   git push -u origin main
+
+4. Eğer SSH kullanıyorsanız:
+   
+   git remote add origin git@github.com:KULLANICI-ADI/REPOSITORY-ADI.git
+   git push -u origin main
+
+NOT: Yukarıdaki komutlarda "KULLANICI-ADI" ve "REPOSITORY-ADI" kısımlarını 
+kendi GitHub bilgilerinizle değiştirin!
+
