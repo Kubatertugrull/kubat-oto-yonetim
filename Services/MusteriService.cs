@@ -231,5 +231,106 @@ public class MusteriService
         }
         return result;
     }
+
+    public async Task<List<object>> GetIlceBazliPazarPenetrasyonAnaliziAsync()
+    {
+        try
+        {
+            await using var connection = await _dbService.GetConnectionAsync();
+            
+            // Önce tablo var mı kontrol et
+            var checkTableCmd = new MySqlCommand(@"
+                SELECT COUNT(*) as TableExists
+                FROM information_schema.tables 
+                WHERE table_schema = DATABASE() 
+                AND table_name = 'ilce_pazar_hedefleri'
+            ", connection);
+            
+            var tableExists = false;
+            await using (var checkReader = await checkTableCmd.ExecuteReaderAsync())
+            {
+                if (await checkReader.ReadAsync())
+                {
+                    tableExists = checkReader.GetInt32("TableExists") > 0;
+                }
+            }
+
+            MySqlCommand cmd;
+            
+            if (tableExists)
+            {
+                // Tablo varsa, orijinal sorguyu kullan
+                cmd = new MySqlCommand(@"
+                    SELECT 
+                        h.Ilce, 
+                        h.ToplamPotansiyel, 
+                        COUNT(m.MusteriID) as Mevcut
+                    FROM ilce_pazar_hedefleri h
+                    LEFT JOIN musteriler m ON h.Ilce = m.Ilce
+                    GROUP BY h.Ilce, h.ToplamPotansiyel
+                    ORDER BY (COUNT(m.MusteriID) / h.ToplamPotansiyel) ASC
+                ", connection);
+            }
+            else
+            {
+                // Tablo yoksa, sadece mevcut müşteri sayılarını göster (varsayılan potansiyel: 100)
+                cmd = new MySqlCommand(@"
+                    SELECT 
+                        m.Ilce, 
+                        100 as ToplamPotansiyel, 
+                        COUNT(m.MusteriID) as Mevcut
+                    FROM musteriler m
+                    WHERE m.Ilce IS NOT NULL AND m.Ilce != ''
+                    GROUP BY m.Ilce
+                    ORDER BY (COUNT(m.MusteriID) / 100) ASC
+                ", connection);
+            }
+
+            var result = new List<object>();
+            await using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var ilce = reader.GetString("Ilce");
+                var toplamPotansiyel = reader.GetInt32("ToplamPotansiyel");
+                var mevcut = reader.GetInt32("Mevcut");
+                
+                // Pazar payı yüzdesini hesapla
+                var pazarPayiYuzdesi = toplamPotansiyel > 0 
+                    ? Math.Round((double)mevcut / toplamPotansiyel * 100, 1) 
+                    : 0.0;
+
+                // Renk kategorisini belirle
+                string renkKategori;
+                if (pazarPayiYuzdesi >= 0 && pazarPayiYuzdesi <= 4)
+                {
+                    renkKategori = "red"; // Kritik/Fırsat
+                }
+                else if (pazarPayiYuzdesi >= 5 && pazarPayiYuzdesi <= 9)
+                {
+                    renkKategori = "yellow"; // Orta
+                }
+                else
+                {
+                    renkKategori = "green"; // Doygun (10+)
+                }
+
+                result.Add(new
+                {
+                    ilce = ilce,
+                    toplamPotansiyel = toplamPotansiyel,
+                    mevcut = mevcut,
+                    pazarPayiYuzdesi = pazarPayiYuzdesi,
+                    renkKategori = renkKategori
+                });
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            // Hata durumunda boş liste döndür
+            Console.WriteLine($"İlçe bazlı pazar penetrasyon analizi hatası: {ex.Message}");
+            return new List<object>();
+        }
+    }
 }
 

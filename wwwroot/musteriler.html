@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KUBAT OTO - Müşteriler</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="/css/metronic-style.css">
@@ -42,6 +43,46 @@
     <div class="main-content">
         <div class="page-header">
             <h1><i class="fas fa-users me-2"></i>Müşteriler</h1>
+        </div>
+
+        <!-- İlçe Bazlı Pazar Penetrasyon Analizi -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>İlçe Bazlı Pazar Penetrasyon Analizi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="position: relative; height: 500px;">
+                            <canvas id="pazarPenetrasyonGrafik"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- İzmir İlçe Haritası -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>İzmir İlçe Müşteri Dağılımı</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div id="izmirHaritasi"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="mb-3" id="ilceSecilenBaslik">İlçe Seçin</h6>
+                                <div class="ilce-musteri-listesi" id="ilceMusteriListesi">
+                                    <p class="text-muted text-center py-4">Haritadan bir ilçe seçin</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- En Çok Satış Yapan ve En Çok Kar Eden Müşteriler -->
@@ -104,33 +145,10 @@
                 </div>
             </div>
         </div>
-
-        <!-- İzmir İlçe Haritası -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>İzmir İlçe Müşteri Dağılımı</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div id="izmirHaritasi"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <h6 class="mb-3" id="ilceSecilenBaslik">İlçe Seçin</h6>
-                                <div class="ilce-musteri-listesi" id="ilceMusteriListesi">
-                                    <p class="text-muted text-center py-4">Haritadan bir ilçe seçin</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         function formatNumber(num) {
@@ -496,13 +514,170 @@
             }
         }
 
+        let pazarPenetrasyonChart = null;
+
+        function getRenkKodu(renkKategori) {
+            switch(renkKategori) {
+                case 'red':
+                    return 'rgba(239, 68, 68, 0.8)'; // red-500
+                case 'yellow':
+                    return 'rgba(250, 204, 21, 0.8)'; // yellow-400
+                case 'green':
+                    return 'rgba(34, 197, 94, 0.8)'; // green-500
+                default:
+                    return 'rgba(156, 163, 175, 0.8)'; // gray-400
+            }
+        }
+
+        function getRenkKoduBorder(renkKategori) {
+            switch(renkKategori) {
+                case 'red':
+                    return 'rgb(239, 68, 68)'; // red-500
+                case 'yellow':
+                    return 'rgb(250, 204, 21)'; // yellow-400
+                case 'green':
+                    return 'rgb(34, 197, 94)'; // green-500
+                default:
+                    return 'rgb(156, 163, 175)'; // gray-400
+            }
+        }
+
+        async function loadIlceBazliPazarPenetrasyonAnalizi() {
+            try {
+                const response = await fetch('/api/musteri/ilce-bazli-pazar-penetrasyon');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const json = await response.json();
+                const canvas = document.getElementById('pazarPenetrasyonGrafik');
+                
+                if (!canvas) {
+                    console.error('pazarPenetrasyonGrafik canvas bulunamadı');
+                    return;
+                }
+                
+                if (json.success && json.data && json.data.length > 0) {
+                    // Önceki grafik varsa yok et
+                    if (pazarPenetrasyonChart) {
+                        pazarPenetrasyonChart.destroy();
+                    }
+
+                    // Verileri hazırla
+                    const ilceler = json.data.map(item => item.ilce);
+                    const pazarPaylari = json.data.map(item => item.pazarPayiYuzdesi);
+                    const mevcutFirmalar = json.data.map(item => item.mevcut);
+                    const toplamPotansiyel = json.data.map(item => item.toplamPotansiyel);
+                    const renkler = json.data.map(item => getRenkKodu(item.renkKategori));
+                    const renklerBorder = json.data.map(item => getRenkKoduBorder(item.renkKategori));
+
+                    // Chart.js kontrolü
+                    if (typeof Chart === 'undefined') {
+                        console.error('Chart.js yüklenemedi!');
+                        return;
+                    }
+
+                    // Yeni grafik oluştur
+                    const ctx = canvas.getContext('2d');
+                    pazarPenetrasyonChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ilceler,
+                            datasets: [{
+                                label: 'Pazar Penetrasyon Yüzdesi (%)',
+                                data: pazarPaylari,
+                                backgroundColor: renkler,
+                                borderColor: renklerBorder,
+                                borderWidth: 2,
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y', // Horizontal bar chart
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const index = context.dataIndex;
+                                            return [
+                                                `Pazar Payı: %${pazarPaylari[index]}`,
+                                                `Mevcut: ${mevcutFirmalar[index]} Firma`,
+                                                `Toplam Potansiyel: ${toplamPotansiyel[index]} Firma`
+                                            ];
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + '%';
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Pazar Penetrasyon Yüzdesi (%)'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'İlçeler'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // Veri yoksa mesaj göster
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.font = '16px Arial';
+                    ctx.fillStyle = '#6c757d';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Henüz veri bulunmamaktadır.', canvas.width / 2, canvas.height / 2);
+                }
+            } catch (error) {
+                console.error('İlçe bazlı pazar penetrasyon analizi yüklenirken hata:', error);
+                console.error('Hata detayı:', error.stack);
+                const canvas = document.getElementById('pazarPenetrasyonGrafik');
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.font = '16px Arial';
+                    ctx.fillStyle = '#dc3545';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Veri yüklenirken hata oluştu: ' + error.message, canvas.width / 2, canvas.height / 2);
+                }
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            loadEnCokSatisYapanMusteriler();
-            loadEnCokKarEdenMusteriler();
-            // Haritayı biraz gecikmeyle yükle
-            setTimeout(() => {
-                loadIzmirHaritasi();
-            }, 300);
+            // Chart.js yüklenene kadar bekle
+            function waitForChart() {
+                if (typeof Chart !== 'undefined') {
+                    loadIlceBazliPazarPenetrasyonAnalizi();
+                    loadEnCokSatisYapanMusteriler();
+                    loadEnCokKarEdenMusteriler();
+                    // Haritayı biraz gecikmeyle yükle
+                    setTimeout(() => {
+                        loadIzmirHaritasi();
+                    }, 300);
+                } else {
+                    setTimeout(waitForChart, 100);
+                }
+            }
+            waitForChart();
         });
     </script>
 </body>

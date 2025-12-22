@@ -83,5 +83,19 @@ public class MusteriController : ControllerBase
             return StatusCode(500, new { success = false, message = ex.Message });
         }
     }
+
+    [HttpGet("ilce-bazli-pazar-penetrasyon")]
+    public async Task<IActionResult> GetIlceBazliPazarPenetrasyonAnalizi()
+    {
+        try
+        {
+            var data = await _musteriService.GetIlceBazliPazarPenetrasyonAnaliziAsync();
+            return Ok(new { success = true, data });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { success = false, message = ex.Message });
+        }
+    }
 }
 
