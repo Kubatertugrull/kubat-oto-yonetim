@@ -1,0 +1,15 @@
+{
+  "name": "kubat-oto-yonetim",
+  "version": "1.0.0",
+  "description": "Otomotiv Yedek Parça KDS API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5"
+  }
+}
